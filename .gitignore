@@ -1,9 +1,17 @@
 # Local .terraform directories
 **/.terraform/*
+.terraform
 
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+# rando files
+*.back
+
+# nginx license
+nginx-repo.crt
+nginx-repo.key
 
 # Crash log files
 crash.log

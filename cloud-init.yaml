@@ -1,0 +1,87 @@
+#cloud-config
+# vim: syntax=yaml
+package_update: True
+package_upgrade: True
+apt:
+  primary:
+    - arches: [default]
+      search_dns: True
+  sources:
+    docker.list:
+      source: deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable
+      keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    nginx.list:
+      source: deb http://nginx.org/packages/ubuntu bionic nginx
+      keyid: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+    kubernets.list:
+      source: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      keyid: 54A647F9048D5688D7DA2ABE6A030B21BA07F4FB
+packages:
+  - apt-transport-https
+  - gnupg2
+  - nginx
+  - nodejs
+  - npm
+  - ssg-base
+  - ssg-debderived
+  - ssg-debian
+  - ssg-nondebian
+  - ssg-applications
+  - docker-ce
+  - docker-ce-cli
+  - kubeadm
+  - kubelet
+  - kubectl
+write_files:
+  - path: /etc/cron.d/letsencrypt_renew
+    content: 15 3 * * * /usr/bin/certbot renew --quiet
+  - path: /etc/ssh/sshd_config
+    content: |
+      Port 22
+      Protocol 2
+      UsePrivilegeSeparation yes
+      KeyRegenerationInterval 3600
+      ServerKeyBits 1024
+      SyslogFacility AUTH
+      LogLevel INFO
+      LoginGraceTime 120
+      MaxAuthTries 6
+      MaxSessions 10
+      PermitRootLogin no
+      StrictModes yes
+      RSAAuthentication yes
+      PubkeyAuthentication yes
+      IgnoreRhosts yes
+      RhostsRSAAuthentication no
+      HostbasedAuthentication no
+      PermitEmptyPasswords no
+      ChallengeResponseAuthentication no
+      X11Forwarding yes
+      X11DisplayOffset 10
+      PrintMotd no
+      PrintLastLog yes
+      TCPKeepAlive yes
+      AcceptEnv LANG LC_*
+      Subsystem sftp /usr/lib/openssh/sftp-server
+      UsePAM yes
+      Banner "You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. At any time, the USG may inspect and seize data stored on this IS. Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG authorized purpose. This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
+run_cmd:
+  - wget ${oscapProfile}
+  - bunzip2 com.ubuntu.${lsb_release}.usn.oval.xml.bz2
+  - sudo oscap oval eval --report /usr/share/nginx/html/index.html com.ubuntu.${lsb_release}.usn.oval.xml
+  - sudo sed -i "s/server_name  localhost/server_name  mjc-69a829c7.usgovvirginia.cloudapp.usgovcloudapi.net/g" /etc/nginx/conf.d/default.conf
+  - sudo systemctl start nginx
+  - sudo snap install core
+  - sudo snap refresh core
+  - sudo snap install --classic certbot
+  - sudo ln -s /snap/bin/certbot /usr/bin/certbot
+  - sudo certbot --nginx -n -d ${fqdn} --email ${owner} --agree-tos
+  - sudo apt-get -y clean
+  - sudo apt-get -y autoremove --purge
+  - sudo systemctl enable docker
+  - sudo systemctl start docker
+system_info:
+  default_user:
+    groups: [docker]
+power_state:
+  mode: reboot
