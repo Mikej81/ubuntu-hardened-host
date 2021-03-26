@@ -26,11 +26,11 @@ variable lsb_release { default = "bionic" }
 variable tags {
   default = {
     "purpose"     = "public"
-    "environment" = "f5env" #ex. dev/staging/prod
-    "owner"       = "michael@f5.com"
-    "group"       = "f5group"
-    "costcenter"  = "f5costcenter"
-    "application" = "f5app"
+    "environment" = "env" #ex. dev/staging/prod
+    "owner"       = "email@domain" # will be passed to certbot
+    "group"       = "group"
+    "costcenter"  = "costcenter"
+    "application" = "app"
   }
 }
 ```
