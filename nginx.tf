@@ -51,7 +51,7 @@ resource azurerm_public_ip publicip {
 }
 
 output secure_nginx_public_ip { value = "http://${azurerm_public_ip.publicip.ip_address}" }
-output secure_nginx_public_fqdn { value = "http://${azurerm_public_ip.publicip.fqdn}" }
+output secure_nginx_public_fqdn { value = "https://${azurerm_public_ip.publicip.fqdn}" }
 
 # Create Network Security Group and rule
 resource azurerm_network_security_group network_security_group {
