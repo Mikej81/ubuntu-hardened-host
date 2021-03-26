@@ -4,6 +4,9 @@ Hardened (FIPS) Host for NGINX, Docker, Kubernetes, etc
 - This will deploy a single Ubuntu 18.04 (Bionic) Instance, apply security hardening configurations, install NGINX/NGINX+, Docker, and Kubernetes.  
 - Then use certbot to install valid certificate.
 - Then download and scan with OpenScap, saving the results to the default index for NGINX.
+![OpenScap](./images/1.png)
+- Current configs are only hitting SSL Labs A, but need to add in a few more configs.
+![SSL Labs](./images/2.png)
 
 ## Deployment
 

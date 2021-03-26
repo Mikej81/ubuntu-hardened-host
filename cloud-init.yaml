@@ -33,6 +33,102 @@ packages:
   - kubelet
   - kubectl
 write_files:
+  - owner: root:root
+    path: /etc/logrotate.d/auditd
+    content: |
+      /var/log/audit/audit.log {
+          daily
+          rotate 7
+          copytruncate
+          compress
+          missingok
+          notifempty
+          sharedscripts
+          postrotate
+          invoke-rc.d auditd restart
+          endscript
+      }
+  - owner: root:root
+    path: /etc/audit/audit.rules
+    content: |
+      -w /etc/passwd -p wa -k
+      -w /etc/group -p wa -k 
+      -w /etc/gshadow -p wa -k 
+      -w /etc/shadow -p wa -k 
+      -w /etc/security/opasswd -p wa -k identity
+      -a always,exit -F arch=b64 -S execve -C uid!=euid -F key=execpriv 
+      -a always,exit -F arch=b64 -S execve -C gid!=egid -F key=execpriv 
+      -a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change 
+      -a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change 
+      -a always,exit -F path=/bin/umount -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-mount
+      -a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+      -a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+      -w /sbin/insmod -p x -k modules
+      -w /sbin/rmmod -p x -k modules
+      -w /sbin/modprobe -p x -k modules
+      -w /bin/kmod -p x -k modules
+      -a always,exit -F arch=b64 -S setxattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+      -a always,exit -F arch=b64 -S setxattr -F auid=0 -k perm_mod 
+      -a always,exit -F arch=b64 -S lsetxattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+      -a always,exit -F arch=b64 -S lsetxattr -F auid=0 -k perm_mod 
+      -a always,exit -F arch=b64 -S fsetxattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+      -a always,exit -F arch=b64 -S fsetxattr -F auid=0 -k perm_mod
+      -a always,exit -F arch=b64 -S removexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+      -a always,exit -F arch=b64 -S removexattr -F auid=0 -k perm_mod 
+      -a always,exit -F arch=b64 -S lremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+      -a always,exit -F arch=b64 -S lremovexattr -F auid=0 -k perm_mod
+      -a always,exit -F arch=b64 -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+      -a always,exit -F arch=b64 -S fremovexattr -F auid=0 -k perm_mod
+      -a always,exit -F arch=b64 -S chown -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F arch=b64 -S fchown -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F arch=b64 -S fchownat -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F arch=b64 -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F arch=b64 -S chmod -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F arch=b64 -S fchmod -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F arch=b64 -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F arch=b64 -S open -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S open -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S truncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S truncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S creat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S creat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S openat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S openat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+      -a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
+      -a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
+      -a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
+      -a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
+      -a always,exit -F path=/sbin/apparmor_parser -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -w /var/log/tallylog -p wa -k logins
+      -w /var/log/faillog -p wa -k logins
+      -w /var/log/lastlog -p wa -k logins
+      -a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+      -a always,exit -F path=/sbin/unix_update -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-unix-update
+      -a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-gpasswd
+      -a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-chage
+      -a always,exit -F path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod
+      -a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-crontab
+      -a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-pam_timestamp_check
+      -a always,exit -F arch=b64 -S init_module -F auid>=1000 -F auid!=4294967295 -k module_chng
+      -a always,exit -F arch=b64 -S finit_module -F auid>=1000 -F auid!=4294967295 -k module_chng
+      -a always,exit -F arch=b64 -S delete_module -F auid>=1000 -F auid!=4294967295 -k module_chng
+      -a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+      -a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-gpasswd
+  - owner: root:root
+    path: /etc/pam.d/common-auth
+    content: |
+      auth    [success=1 default=ignore]      pam_unix.so 
+      auth    required                        pam_deny.so
+      auth    required                        pam_tally2.so    onerr=fail deny=3 unlock_time=3600
+      auth    required                        pam_permit.so
+      auth    required                        pam_faildelay.so    delay=4000000
+      auth sufficient pam_timestamp.so timestamp_timeout=86400
   - path: /etc/cron.d/letsencrypt_renew
     content: 15 3 * * * /usr/bin/certbot renew --quiet
   - path: /etc/ssh/sshd_config
@@ -70,6 +166,7 @@ runcmd:
   - bunzip2 com.ubuntu.${lsb_release}.usn.oval.xml.bz2
   - sudo oscap oval eval --report /usr/share/nginx/html/index.html com.ubuntu.${lsb_release}.usn.oval.xml
   - sudo sed -i "s/server_name  localhost/server_name  ${fqdn}/g" /etc/nginx/conf.d/default.conf
+  - sudo sed -i '/server_name/ r ~/pfs.conf' /etc/nginx/conf.d/default.conf
   - sudo systemctl start nginx
   - sudo snap install core
   - sudo snap refresh core
