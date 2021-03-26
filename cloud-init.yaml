@@ -166,13 +166,13 @@ runcmd:
   - bunzip2 com.ubuntu.${lsb_release}.usn.oval.xml.bz2
   - sudo oscap oval eval --report /usr/share/nginx/html/index.html com.ubuntu.${lsb_release}.usn.oval.xml
   - sudo sed -i "s/server_name  localhost/server_name  ${fqdn}/g" /etc/nginx/conf.d/default.conf
-  - sudo sed -i '/server_name/ r ~/pfs.conf' /etc/nginx/conf.d/default.conf
+  - sudo sed -i '/server_name/ r /tmp/pfs.conf' /etc/nginx/conf.d/default.conf
   - sudo systemctl start nginx
   - sudo snap install core
   - sudo snap refresh core
   - sudo snap install --classic certbot
   - sudo ln -s /snap/bin/certbot /usr/bin/certbot
-  - sudo certbot --nginx -n -d ${fqdn} --email ${owner} --agree-tos
+  - sudo certbot --nginx -n -d ${fqdn} --hsts --email ${owner} --agree-tos
   - sudo apt-get -y clean
   - sudo apt-get -y autoremove --purge
   - sudo systemctl enable docker
@@ -182,4 +182,4 @@ system_info:
     groups: [docker]
 power_state:
   mode: reboot
-  timeout: 30
+  timeout: 60

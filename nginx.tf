@@ -139,10 +139,12 @@ data template_file init {
   template = file("cloud-init.yaml")
 
   vars = {
-    oscapProfile = var.oscap_profile
-    lsb_release  = var.lsb_release
-    owner        = var.tags["owner"]
-    fqdn         = azurerm_public_ip.publicip.fqdn
+    oscapProfile    = var.oscap_profile
+    lsb_release     = var.lsb_release
+    owner           = var.tags["owner"]
+    fqdn            = azurerm_public_ip.publicip.fqdn
+    nginx_repo_cert = file("nginx-repo.crt")
+    nginx_repo_key  = file("nginx-repo.key")
   }
 }
 
@@ -174,6 +176,7 @@ data template_cloudinit_config cloud_init {
     content_type = "text/x-shellscript"
     content      = data.template_file.script.rendered
   }
+
 }
 
 # Create virtual machine
@@ -219,4 +222,12 @@ resource azurerm_linux_virtual_machine nginx_vm_01 {
   }
 
   tags = var.tags
+}
+resource local_file onboard_init {
+  content  = data.template_file.init.rendered
+  filename = "${path.module}/outputs/cloud-rendered.yaml"
+}
+resource local_file onboard_script {
+  content  = data.template_file.script.rendered
+  filename = "${path.module}/outputs/script.sh"
 }

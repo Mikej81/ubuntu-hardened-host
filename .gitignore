@@ -13,6 +13,9 @@
 nginx-repo.crt
 nginx-repo.key
 
+# outputs
+outputs
+
 # Crash log files
 crash.log
 
