@@ -5,7 +5,7 @@ Hardened (FIPS) Host for NGINX, Docker, Kubernetes, etc
 - This will deploy a single Ubuntu 18.04 (Bionic) Instance, apply security hardening configurations, install NGINX/NGINX+, Docker, and Kubernetes.  
 - Then use certbot to install valid certificate.
 - Then download and scan with OpenScap and Inspec, saving the results to the default index and inspec.json.
-  - Inspec Audits are pulling from https://github.com/mitre/canonical-ubuntu-18.04-lts-stig-baseline
+  - Inspec Audits are pulling from [https://github.com/mitre/canonical-ubuntu-18.04-lts-stig-baseline](https://github.com/mitre/canonical-ubuntu-18.04-lts-stig-baseline)
 
 ![OpenScap](./images/1.png)
 
