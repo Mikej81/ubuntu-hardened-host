@@ -1,5 +1,6 @@
 # todo
 
+```yaml
 - echo '* hard maxlogins 10' >> /etc/security/limits.conf
 - sudo apt-get remove telnet
 - sed -i 's|PASS_MIN_DAYS.*|PASS_MIN_DAYS   1|g' /etc/login.defs
@@ -11,3 +12,4 @@
 - printf '[org/gnome/settings-daemon/plugins/media-keys]\nlogout="" ' > /etc/dconf/db/local.d/00-disable-CAD
 - dconf update
 - echo "install usb-storage /bin/true" >> /etc/modprobe.d/disable_usb_storage.conf
+```
