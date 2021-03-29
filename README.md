@@ -4,9 +4,13 @@ Hardened (FIPS) Host for NGINX, Docker, Kubernetes, etc
 
 - This will deploy a single Ubuntu 18.04 (Bionic) Instance, apply security hardening configurations, install NGINX/NGINX+, Docker, and Kubernetes.  
 - Then use certbot to install valid certificate.
-- Then download and scan with OpenScap, saving the results to the default index for NGINX.
+- Then download and scan with OpenScap and Inspec, saving the results to the default index and inspec.json.
+  - Inspec Audits are pulling from https://github.com/mitre/canonical-ubuntu-18.04-lts-stig-baseline
+
 ![OpenScap](./images/1.png)
+
 - Current configs are recieving A+ on SSL Labs.
+
 ![SSL Labs](./images/2.png)
 
 ## to do
@@ -55,6 +59,6 @@ terraform apply
 ```bash
 Outputs:
 
-secure_nginx_public_fqdn = https://random.azure.domains.com
-secure_nginx_public_ip = https://XX.XX.XX.XX
+output secure_oscap_results { value = "https://${azurerm_public_ip.publicip.fqdn}" }
+output secure_inspec_results { value = "https://${azurerm_public_ip.publicip.fqdn}/inspec.json" }
 ```

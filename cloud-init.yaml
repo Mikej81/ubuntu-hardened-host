@@ -32,6 +32,8 @@ packages:
   - kubeadm
   - kubelet
   - kubectl
+  - auditd
+  - audispd-plugins
 write_files:
   - owner: root:root
     path: /etc/logrotate.d/auditd
@@ -162,6 +164,8 @@ write_files:
       UsePAM yes
       Banner "You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. At any time, the USG may inspect and seize data stored on this IS. Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG authorized purpose. This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
 runcmd:
+  - curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P inspec
+  - inspec exec https://github.com/mitre/canonical-ubuntu-18.04-lts-stig-baseline --reporter=cli json:/usr/share/nginx/html/inspec.json --no-interactive --chef-license=accept-silent
   - wget ${oscapProfile}
   - bunzip2 com.ubuntu.${lsb_release}.usn.oval.xml.bz2
   - sudo oscap oval eval --report /usr/share/nginx/html/index.html com.ubuntu.${lsb_release}.usn.oval.xml
@@ -177,9 +181,20 @@ runcmd:
   - sudo apt-get -y autoremove --purge
   - sudo systemctl enable docker
   - sudo systemctl start docker
+  - echo "maxpoll = 17" >> /etc/ntp.conf
+  - systemctl restart ntp
+  - sed -i 's|#net.ipv4.tcp_syncookies=1|net.ipv4.tcp_syncookies = 1|g' /etc/sysctl.conf
+  - sed -i 's|#net.ipv4.conf.default.accept_redirects = 0|net.ipv4.conf.default.accept_redirects = 0|g' /etc/sysctl.conf
+  - sed -i 's|#net.ipv4.conf.all.send_redirects = 0|net.ipv4.conf.all.send_redirects = 0|g' /etc/sysctl.conf
+  - sed -i 's|#net.ipv4.ip_forward=1|net.ipv4.ip_forward = 0|g' /etc/sysctl.conf
+  - printf '\nnet.ipv4.conf.default.send_redirects=0\nnet.ipv4.conf.all.accept_redirects=0' >> /etc/sysctl.conf
+  - sudo sysctl -p > /dev/null
+  - sed -i 's|max_log_file_action = ROTATE|max_log_file_action = SYSLOG|g' /etc/audit/auditd.conf
+  - sed -i 's|disk_full_action = SUSPEND|disk_full_action = HALT|g' /etc/audit/auditd.conf
+  - systemctl restart auditd.service
 system_info:
   default_user:
     groups: [docker]
 power_state:
   mode: reboot
-  timeout: 60
+  timeout: 120

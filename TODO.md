@@ -1,6 +1,5 @@
 # todo
 
-- sudo sed -i 's/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/g' /etc/nginx/conf.d/default.conf
 - echo '* hard maxlogins 10' >> /etc/security/limits.conf
 - sudo apt-get remove telnet
 - sed -i 's|PASS_MIN_DAYS.*|PASS_MIN_DAYS   1|g' /etc/login.defs
@@ -12,24 +11,3 @@
 - printf '[org/gnome/settings-daemon/plugins/media-keys]\nlogout="" ' > /etc/dconf/db/local.d/00-disable-CAD
 - dconf update
 - echo "install usb-storage /bin/true" >> /etc/modprobe.d/disable_usb_storage.conf
-- echo "maxpoll = 17" >> /etc/ntp.conf
-- systemctl restart ntp
-- sed -i 's|#net.ipv4.tcp_syncookies=1|net.ipv4.tcp_syncookies = 1|g' /etc/sysctl.conf
-- sed -i 's|#net.ipv4.conf.default.accept_redirects = 0|net.ipv4.conf.default.accept_redirects = 0|g' /etc/sysctl.conf
-- sed -i 's|#net.ipv4.conf.all.send_redirects = 0|net.ipv4.conf.all.send_redirects = 0|g' /etc/sysctl.conf
-- sed -i 's|#net.ipv4.ip_forward=1|net.ipv4.ip_forward = 0|g' /etc/sysctl.conf
-- printf '\nnet.ipv4.conf.default.send_redirects=0\nnet.ipv4.conf.all.accept_redirects=0' >> /etc/sysctl.conf
-- sudo sysctl -p > /dev/null
-- dpkg -i deb_packages/libauparse0_2.4.5-1ubuntu2.1_amd64.deb > /dev/null
-- dpkg -i deb_packages/auditd_2.4.5-1ubuntu2_amd64.deb >  /dev/null
-- dpkg -i deb_packages/libprelude2v5_1.0.0-11.7ubuntu1_amd64.deb > /dev/null
-- dpkg -i deb_packages/audispd-plugins_2.4.5-1ubuntu2_amd64.deb > /dev/null
-- sed -i 's|max_log_file_action = ROTATE|max_log_file_action = SYSLOG|g' /etc/audit/auditd.conf
-- sed -i 's|disk_full_action = SUSPEND|disk_full_action = HALT|g' /etc/audit/auditd.conf
-- sed -i 's|disk_full_action = ignore|disk_full_action = SYSLOG|g' /etc/audisp/audisp-remote.conf
-- sed -i 's|##enable_krb5 = no|enable_krb5 = yes|g' /etc/audisp/audisp-remote.conf
-- sed -i 's|network_failure_action = stop|network_failure_action = halt|g' /etc/audisp/audisp-remote.conf
-- printf '\nnetwork_failure_action = stop' >> /etc/audisp/audisp-remote.conf
-- systemctl restart auditd.service
-- dpkg -i deb_packages/opensc-pkcs11_0.15.0-1ubuntu1_amd64.deb > /dev/null
-- dpkg -i deb_packages/libpam-pkcs11_0.6.8-4_amd64.deb > /dev/null

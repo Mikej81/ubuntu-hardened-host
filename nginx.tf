@@ -50,8 +50,9 @@ resource azurerm_public_ip publicip {
   tags = var.tags
 }
 
-output secure_nginx_public_ip { value = "http://${azurerm_public_ip.publicip.ip_address}" }
-output secure_nginx_public_fqdn { value = "https://${azurerm_public_ip.publicip.fqdn}" }
+output nginx_public_ip { value = "ssh://${azurerm_public_ip.publicip.ip_address}" }
+output secure_oscap_results { value = "https://${azurerm_public_ip.publicip.fqdn}" }
+output secure_inspec_results { value = "https://${azurerm_public_ip.publicip.fqdn}/inspec.json" }
 
 # Create Network Security Group and rule
 resource azurerm_network_security_group network_security_group {
